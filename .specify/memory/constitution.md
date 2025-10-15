@@ -1,50 +1,240 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+同步影響報告：
+- 版本：0.0.0 → 1.0.0
+- 修改原則：初始憲法建立，整合報價單工具專案需求
+- 新增章節：完整的六大核心原則、開發工作流程、治理規範
+- 移除章節：無（初始版本）
+- 需要更新的模板：
+  ⚠ plan-template.md - 需新增 Constitution Check 章節
+  ⚠ spec-template.md - 需確保使用者情境包含 UX 與語言要求
+  ⚠ tasks-template.md - 需新增 Constitutional Reminders 章節
+- 後續待辦事項：建立相依模板文件
+-->
 
-## Core Principles
+# 報價單工具專案憲法
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+## 專案宗旨
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+本專案為一個不依賴後端的離線型報價單產出工具，主要目的在於：
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+- 提供使用者可快速建立、編輯並匯出報價單的簡單工具
+- 所有使用者資料皆暫存於 localStorage，不儲存於後端
+- 匯出 PDF 或 CSV 後，立即清除 localStorage，相當於歸檔結案
+- 使用者體驗直覺、流程快速、操作零學習成本
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+## 核心原則
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### 一、技術棧規範（不可協商）
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+**程式語言**：所有開發必須使用 JavaScript (ES6)。嚴格禁止使用 TypeScript。
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+**前端框架**：React 或 Vue 3，Vue 僅允許使用 Composition API。嚴格禁止使用 Options API。
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+**樣式系統**：必須使用 Tailwind CSS v4 官方最新語法。不允許使用其他 CSS 框架。
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+**圖示資源**：所有圖示必須使用 Heroicons。嚴格禁止使用 emoji 作為圖示。
 
-## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
+**匯出工具**：
+- PDF 匯出必須使用 html2pdf.js
+- CSV 匯出必須使用 papaparse
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+**禁止後端儲存與登入機制**：嚴禁任何形式的後端帳號登入、資料儲存、資料庫建立行為。
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**理由說明**：這些限制確保一致性、可維護性，並與現代 JavaScript 最佳實踐保持一致，同時避免 TypeScript 引入的型別系統複雜性。此技術棧為本專案範圍提供最佳的開發體驗與程式碼簡潔性。
+
+### 二、使用者體驗卓越性（不可協商）
+
+**UX 要求**：每個功能與畫面必須提供卓越的使用者體驗，包括：
+- 流暢且響應迅速的互動
+- 清晰且有幫助的使用者回饋
+- 適當的空白狀態與錯誤處理
+- 直覺的導航與資訊架構
+
+**編輯體驗**：所有報價單欄位可直接編輯（例如：商品名稱、數量、單價、自動小計）。
+
+**即時儲存**：使用者內容於變更時即自動儲存至 localStorage。
+
+**響應式設計**：所有介面必須支援跨裝置使用情境（手機、平板、桌面），並實作適當的響應式設計。
+
+**匯出即清除**：匯出 PDF 或 CSV 後立即執行 `localStorage.removeItem()` 並重置畫面。
+
+**錯誤防呆**：若匯出失敗不得清除 localStorage，並顯示錯誤訊息。
+
+**空白狀態**：初次使用或資料被清除時，顯示空白畫面引導建立新報價單。
+
+**效能標準**：程式碼必須達到卓越的效能標準：
+- 無不必要的重新渲染或元件更新
+- 無凍結 UI 的阻塞操作
+- 渲染路徑中無過度運算
+- 最佳化的渲染與資料流
+- 高效的狀態管理
+
+**理由說明**：使用者體驗至關重要。糟糕的 UX 導致使用者流失與專案失敗。效能與響應性是核心 UX 關注點。
+
+### 三、程式碼品質與可維護性
+
+**程式碼特性**：所有程式碼必須具備：
+- **最佳化**：效能最佳化的實作模式
+- **可讀性**：清晰的意圖、自我說明的程式碼結構
+- **模組化**：結構良好、可重複使用的元件與函式
+- **無重複**：嚴格執行 DRY 原則
+- **一致性**：全域統一的風格與模式
+
+**禁止的反模式**：
+- 無正當理由的硬寫值（hardcode）
+- 過度的程式碼重複或複製貼上式程式設計
+- 難以維護或過度複雜的邏輯
+- 關注點分離不良
+
+**Linting/格式化**：不需要配置 ESLint。程式碼風格必須透過嚴謹的開發實踐保持一致、乾淨且可維護。
+
+**測試**：不需要複雜的單元測試。實作必須遵循嚴謹的結構標準與防禦性程式設計實踐以確保品質。
+
+**元件架構**：元件必須適當分解，具備：
+- 清晰的關注點分離
+- 單一職責原則
+- 模組化、可重複使用的設計
+
+**理由說明**：最佳化、可讀且模組化的程式碼減少技術債、加速功能開發、減少錯誤，並確保長期可維護性。一致性促進有效協作與程式碼審查。
+
+### 四、資料處理與匯出規範
+
+**資料暫存規則**：
+- 使用者所有資料（報價內容、客戶資訊）僅暫存於 localStorage
+- 每次資料異動皆應自動更新 localStorage
+- 匯出（PDF 或 CSV）完成後，立即清除 localStorage
+- 每次進入網站，若 localStorage 為空，則顯示空白報價單
+
+**資料結構規範**：
+```json
+{
+  "customer": {
+    "name": "",
+    "email": "",
+    "phone": ""
+  },
+  "items": [
+    {
+      "description": "",
+      "quantity": 1,
+      "unitPrice": 100,
+      "total": 100
+    }
+  ],
+  "notes": "",
+  "createdAt": "2025-10-15T00:00:00Z"
+}
+```
+
+**PDF 匯出規範**：
+- 使用 html2pdf.js 將指定 DOM 範圍匯出
+- 樣式包含：公司資訊、LOGO、報價單標題、表格、備註區
+- 中文字型需內嵌避免亂碼（建議使用 Noto Sans TC）
+- 匯出成功後自動執行 `localStorage.removeItem('quoteData')` 並重新導向空白報價單頁
+
+**CSV 匯出規範**：
+- 使用 papaparse 將表格資料匯出
+- 欄位包含：商品名稱、數量、單價、小計等
+- 匯出完成後自動清除 localStorage
+
+**錯誤處理**：
+- 若匯出失敗（如 PDF 封裝錯誤），不得清除 localStorage
+- 若 localStorage 資料格式損毀，則自動重設為空白狀態並顯示錯誤提示
+
+**理由說明**：明確的資料處理規範確保使用者資料安全，避免意外資料遺失，並提供一致的使用體驗。
+
+### 五、命名規範與文件標準
+
+**命名規則**：
+- 元件：採用 PascalCase 命名（如：QuoteEditor、ExportButton）
+- Hooks / 方法：採用 camelCase（如：handleExportPDF、useLocalStorage）
+- className：Tailwind Utility First，不額外定義 SCSS
+
+**程式碼語言**：所有變數名稱、函式名稱、元件名稱與程式碼註解必須使用英文撰寫。
+
+**README 要求**：每個功能單元或功能必須包含完整的 README.md 文件檔案，內容包含：
+- **功能簡介**：清楚描述目的與功能
+- **安裝與執行說明**：逐步設定指引
+- **使用說明與範例**：實用的使用範例與操作指引
+- **UI 截圖**：選用但建議加入視覺化功能
+
+**文件語言**：所有使用者導向的文件（README.md、使用者指南、說明文字）必須使用正體中文撰寫，以符合目標使用者群。
+
+**外部相依性**：當使用外部套件、函式庫或 API 時，所有相依性與配置需求必須清楚記錄並標註版本規格。
+
+**理由說明**：英文是程式設計的通用語言。一致的命名規範提升程式碼可讀性並促進國際協作。正體中文文件確保目標使用者群能夠輕鬆理解與使用。
+
+### 六、UI 呈現語言
+
+**使用者介面**：所有使用者導向的文字、標籤、訊息與內容必須使用正體中文呈現。
+
+**錯誤訊息**：使用者導向的錯誤訊息必須使用正體中文，並提供清晰、可操作的指引。
+
+**理由說明**：目標使用者群為正體中文使用者。母語介面提升可用性並減少認知負荷。
+
+## 專案結構規範
+
+**建議目錄結構**：
+```
+src/
+├── components/
+│   ├── QuoteEditor.vue
+│   ├── ItemTable.vue
+│   ├── ExportControls.vue
+│   └── EmptyState.vue
+├── utils/
+│   ├── exportPDF.js
+│   ├── exportCSV.js
+├── composables/
+│   └── useLocalQuote.js
+├── App.vue
+└── main.js
+```
+
+**元件組織原則**：
+- 每個元件應有清晰的單一職責
+- 可重複使用的元件放置於 `components/` 目錄
+- 工具函式放置於 `utils/` 目錄
+- 自訂 Hooks 放置於 `hooks/` 目錄
+
+## 開發工作流程
+
+**規格驅動開發（SSD）**：本專案遵循嚴格的 SSD 工作流程，所有開發透過結構化階段進行：
+
+1. **規格制定**（/speckit.specify）：以自然語言定義功能需求
+2. **規劃**（/speckit.plan）：建立技術實作計畫
+3. **任務生成**（/speckit.tasks）：分解為可執行的任務
+4. **實作**（/speckit.implement）：系統化執行任務
+
+**工作流程遵循**：所有參與者（人類開發者與 AI 助理）必須嚴格遵循此工作流程。嚴格禁止跳過階段、臨時開發或偏離結構化流程。
+
+**品質關卡**：每個階段包含驗證檢查點，必須通過才能進入下一階段。除非明確修憲，否則不允許例外。
+
+## 治理規範
+
+**憲法權威**：本憲法優先於所有其他開發實踐、指南或偏好。如有衝突，以本文件為準。
+
+**修憲程序**：修改本憲法需要：
+1. 變更的書面理由說明
+2. 對現有程式碼與工作流程的影響分析
+3. 更新所有相依的模板與文件
+4. 遵循語意化版本控制的版本遞增
+
+**合規驗證**：所有程式碼審查、拉取請求與 AI 輔助開發會議必須驗證是否符合憲法原則。
+
+**AI 助理指引**：
+- AI 助理在執行任何工作流程指令（/speckit.specify、/speckit.plan、/speckit.tasks、/speckit.implement 等）時，必須嚴格遵守所有憲法原則
+- AI 助理與使用者溝通時必須使用正體中文回應，除非程式碼或技術內容需要使用英文
+- AI 助理不得引入本憲法未指定的未授權技術棧、框架或函式庫
+- AI 助理必須在呈現給使用者之前，驗證所有生成的程式碼是否符合憲法要求
+
+**原則違反**：任何偏離憲法原則的行為必須在實作計畫的複雜度追蹤章節中明確說明理由。未經說明的違反行為將立即被駁回。
+
+**不可違反的憲法條文**：
+- 不得引入後端儲存功能
+- 不得保留匯出後的任何使用者資料
+- 不得使用外部追蹤工具（如 GA、熱點圖）侵犯使用者隱私
+- 每一次資料異動皆應自動更新 localStorage
+- 不得使用 iframe 嵌入其他報價工具或第三方工具表單
+
+**Version**: 1.0.0 | **Ratified**: 2025-10-15 | **Last Amended**: 2025-10-15
